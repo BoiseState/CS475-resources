@@ -149,6 +149,11 @@ sourceCode:
   path: "OVERRIDE!"
   storage: "5Gi"
 
+db:
+  path: "OVERRIDE!"
+  storage: "5Gi"
+  password: 'pa55w0rd'
+
 # Additional volumes on the output Deployment definition.
 volumes: []
   # - name: foo

@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "../../../emacs-backups/!Users!m!src!software-security!lab-0!app!db.ts~", "../../../emacs-backups/!Users!m!src!software-security!lab-0!app!api!likes!route.ts~", "../../../emacs-backups/!Users!m!src!software-security!lab-0!app!likeButton.tsx~"  ],
   "exclude": ["node_modules"]
 }

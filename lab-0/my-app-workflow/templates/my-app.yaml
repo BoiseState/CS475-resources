@@ -1,29 +1,42 @@
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: {{ include "my-app-workflow.fullname" . }}
   labels:
     {{- include "my-app-workflow.selectorLabels" . | nindent 4 }}
 spec:
-  containers:
-  - name: my-app
-    image: my-app:{{ .Values.app.tag }}
-    imagePullPolicy: IfNotPresent
-    ports:
-      - containerPort: 3000
-        name: http-web-svc
-    {{ if eq .Values.app.tag "dev" }}
-    volumeMounts:
-      - name: {{ include "my-app-workflow.fullname" . }}-src
-        mountPath: app/app
-    {{ end }}
-    env:
-      - name: WATCHPACK_POLLING
-        value: "true"
-  {{ if eq .Values.app.tag "dev" }}
-  volumes:
-    - name: {{ include "my-app-workflow.fullname" . }}-src
-      persistentVolumeClaim:
-        claimName: {{ include "my-app-workflow.fullname" . }}
-  {{ end }}
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "my-app-workflow.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "my-app-workflow.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: my-app
+          image: my-app:{{ .Values.app.tag }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+              name: http-web-svc
+          {{- if eq .Values.app.tag "dev" }}
+          volumeMounts:
+            - name: {{ include "my-app-workflow.fullname" . }}-src
+              mountPath: app/app
+          {{- end }}
+          env:
+            - name: WATCHPACK_POLLING
+              value: "true"
+            - name: POSTGRES_PASSWORD
+              value: {{ .Values.db.password | quote }}
+            - name: POSTGRES_HOST
+              value: {{ include "my-app-workflow.fullname" . }}-db-svc.default.svc.cluster.local
+      {{- if eq .Values.app.tag "dev" }}
+      volumes:
+        - name: {{ include "my-app-workflow.fullname" . }}-src
+          persistentVolumeClaim:
+            claimName: {{ include "my-app-workflow.fullname" . }}
+      {{- end }}
 
