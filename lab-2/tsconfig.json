@@ -30,5 +30,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
 , "../../../emacs-backups/!Users!m!src!software-security!lab-2!app!logout!page.tsx~", "../../../emacs-backups/!Users!m!src!software-security!lab-2!app!error-banners.tsx~", "../../../emacs-backups/!Users!m!src!software-security!lab-0!app!db.ts~", "../../../emacs-backups/!Users!m!src!software-security!lab-0!app!api!likes!route.ts~", "../../../emacs-backups/!Users!m!src!software-security!lab-0!app!likeButton.tsx~"  ],
-  "exclude": ["node_modules"]
+    "exclude": ["node_modules", "weapon"]
 }
