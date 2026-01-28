@@ -1,0 +1,60 @@
+{{- if not (lookup "v1" "Secret" .Release.Namespace "pg-column-key") -}}
+  {{- fail (printf "Secret 'pg-column-key' must exist before deploying. See lab instructions.") -}}
+{{- end -}}
+
+{{- if not (lookup "v1" "Secret" .Release.Namespace "jwt-key") -}}
+  {{- fail (printf "Secret 'jwt-key' must exist before deploying. See lab instructions.") -}}
+{{- end -}}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "my-app-workflow.fullname" . }}
+  labels:
+    {{- include "my-app-workflow.selectorLabels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "my-app-workflow.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "my-app-workflow.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: my-app
+          image: my-app:{{ .Values.app.tag }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+              name: http-web-svc
+          {{- if eq .Values.app.tag "dev" }}
+          volumeMounts:
+            - name: {{ include "my-app-workflow.fullname" . }}-src
+              mountPath: app/app
+          {{- end }}
+          env:
+            - name: WATCHPACK_POLLING
+              value: "true"
+            - name: POSTGRES_PASSWORD
+              value: {{ .Values.db.password | quote }}
+            - name: POSTGRES_HOST
+              value: {{ include "my-app-workflow.fullname" . }}-db-svc.default.svc.cluster.local
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-key
+                  key: key
+            - name: PG_PASSWORD_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: pg-column-key
+                  key: key
+      {{- if eq .Values.app.tag "dev" }}
+      volumes:
+        - name: {{ include "my-app-workflow.fullname" . }}-src
+          persistentVolumeClaim:
+            claimName: {{ include "my-app-workflow.fullname" . }}
+      {{- end }}
+

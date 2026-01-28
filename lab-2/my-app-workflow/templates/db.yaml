@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ include "my-app-workflow.fullname" . }}-db
+  labels:
+    {{- include "my-app-workflow.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ include "my-app-workflow.fullname" . }}-db
+spec:
+  containers:
+  - name: db
+    image: postgres:18.1-alpine3.23
+    imagePullPolicy: IfNotPresent
+    volumeMounts:
+      - name: {{ include "my-app-workflow.fullname" . }}-db
+        mountPath: /var/lib/postgresql/18/docker
+    env:
+      - name: POSTGRES_PASSWORD
+        value: {{ .Values.db.password }}
+  volumes:
+    - name: {{ include "my-app-workflow.fullname" . }}-db
+      persistentVolumeClaim:
+        claimName: {{ include "my-app-workflow.fullname" . }}-db-pv
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "my-app-workflow.fullname" . }}-db-svc
+spec:
+  selector:
+    app.kubernetes.io/name: {{ include "my-app-workflow.fullname" . }}-db
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
