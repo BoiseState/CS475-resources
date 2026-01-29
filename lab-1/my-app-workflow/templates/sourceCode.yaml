@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "my-app-workflow.fullname" . }}-src
+  labels:
+    {{- include "my-app-workflow.selectorLabels" . | nindent 4 }}
+spec:
+  capacity:
+    storage: {{ .Values.sourceCode.storage }}
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: ""
+  hostPath:
+    path: {{ .Values.sourceCode.path }}
+    type: DirectoryOrCreate
