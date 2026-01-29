@@ -11,17 +11,10 @@ spec:
   accessModes:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Delete
-  storageClassName: local-storage
-  local:
+  storageClassName: ""
+  hostPath:
     path: {{ .Values.db.path }}
-  nodeAffinity:
-    required:
-      nodeSelectorTerms:
-      - matchExpressions:
-        - key: kubernetes.io/hostname
-          operator: In
-          values:
-          - docker-desktop
+    type: DirectoryOrCreate
 
 ---
 
@@ -32,7 +25,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: local-storage
+  storageClassName: ""
   volumeName: {{ include "my-app-workflow.fullname" . }}-db
   resources:
     requests:

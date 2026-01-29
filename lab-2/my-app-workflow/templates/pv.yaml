@@ -5,7 +5,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: local-storage
+  storageClassName: ""
   volumeName: {{ include "my-app-workflow.fullname" . }}-src
   resources:
     requests:
