@@ -1,0 +1,4 @@
+*.solution
+dist/
+password-data-full/
+password-data/
