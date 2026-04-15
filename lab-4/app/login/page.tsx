@@ -36,7 +36,7 @@ export default async function LoginForm({
         const cookieStore = await cookies();
         cookieStore.set('sessionToken', sessionToken, {
             sameSite: 'none',
-            secure: false,
+            secure: true,
         });
 
         redirect('/');
